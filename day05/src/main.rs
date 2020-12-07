@@ -2,14 +2,16 @@ use itertools::Itertools;
 
 fn main() {
     let content = std::fs::read_to_string("input.txt").unwrap();
-    let ids = content.lines().map(|x| x.chars().map(|c|
-        match c {
-            'B' | 'R' => '1',
-            'F' | 'L' => '0',
-            _ => 'x',
-        }
-    ).collect::<String>()
-).map(|s| isize::from_str_radix(&s, 2).unwrap() as i32);
+    let ids = content.lines()
+        .map(|x| x.chars().enumerate()
+            .fold(0, |acc, (pos, c)| 
+                acc + if c == 'B' || c == 'R' {
+                    (2 as i32).pow(9-pos as u32)
+                } else {
+                    0
+                }
+            )
+        );
 
     println!("{}", ids.clone().max().unwrap());
 

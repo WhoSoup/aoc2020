@@ -57,9 +57,11 @@ fn main() {
     loop {
         let mut found = 0;
         for (outer, inner) in &rules {
+            if can_hold_gold.contains(&outer.color[..]) {
+                continue;
+            }
             for i in inner {
-                if can_hold_gold.contains(&i.color[..]) && !can_hold_gold.contains(&outer.color[..])
-                {
+                if can_hold_gold.contains(&i.color[..]) {
                     can_hold_gold.insert(&outer.color[..]);
                     found += 1;
                     break;

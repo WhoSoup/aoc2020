@@ -48,16 +48,10 @@ fn main() {
         }
     });
 
-    let mut sortable: Vec<&str> = vec![];
-
-    for (_, v) in map {
+    for (_, v) in &map {
         for i in v {
-            not_safe.insert(i);
+            not_safe.insert(*i);
         }
-    }
-
-    for k in &not_safe {
-        sortable.push(*k);
     }
 
     let safe: HashSet<&str> = ingredients
@@ -73,6 +67,30 @@ fn main() {
 
     println!("Part One: {:?}", p1);
 
+    let mut sortable: Vec<(&str, &str)> = vec![];
+    while !map.is_empty() {
+        map.clone().iter().for_each(|(k, v)| {
+            if v.len() == 1 {
+                let rest = v[0];
+                sortable.push((k, rest));
+                map.remove(k);
+
+                map.iter_mut().for_each(|(_, v)| {
+                    if let Some(index) = v.iter().position(|x| *x == rest) {
+                        v.remove(index);
+                    }
+                });
+            }
+        });
+    }
+
     sortable.sort();
-    println!("Part Two: {:?}", sortable.join(","));
+    println!(
+        "Part Two: {}",
+        sortable
+            .iter()
+            .map(|x| x.1)
+            .collect::<Vec<&str>>()
+            .join(",")
+    );
 }

@@ -32,34 +32,32 @@ impl Direction {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coord {
-    x: i32,
-    y: i32,
-    z: i32,
+    q: i32,
+    r: i32,
 }
 
 impl Coord {
-    pub fn new(x: i32, y: i32, z: i32) -> Coord {
-        Coord { x, y, z }
+    pub fn new(q: i32, r: i32) -> Coord {
+        Coord { q, r }
     }
 
     pub fn travel(&mut self, dir: Direction) {
         self.add(Coord::dir_to_vec(dir));
     }
 
-    fn add(&mut self, (x, y, z): (i32, i32, i32)) {
-        self.x += x;
-        self.y += y;
-        self.z += z;
+    fn add(&mut self, (q, r): (i32, i32)) {
+        self.q += q;
+        self.r += r;
     }
 
-    fn dir_to_vec(dir: Direction) -> (i32, i32, i32) {
+    fn dir_to_vec(dir: Direction) -> (i32, i32) {
         match dir {
-            Direction::E => (1, -1, 0),
-            Direction::SE => (0, -1, 1),
-            Direction::SW => (-1, 0, 1),
-            Direction::W => (-1, 1, 0),
-            Direction::NW => (0, 1, -1),
-            Direction::NE => (1, 0, -1),
+            Direction::E => (1, 0),
+            Direction::SE => (0, 1),
+            Direction::SW => (-1, 1),
+            Direction::W => (-1, 0),
+            Direction::NW => (0, -1),
+            Direction::NE => (1, -1),
         }
     }
 
@@ -75,11 +73,10 @@ impl Coord {
     }
 
     fn clone_add(self, dir: Direction) -> Coord {
-        let (x, y, z) = Coord::dir_to_vec(dir);
+        let (q, r) = Coord::dir_to_vec(dir);
         Coord {
-            x: self.x + x,
-            y: self.y + y,
-            z: self.z + z,
+            q: self.q + q,
+            r: self.r + r,
         }
     }
 }
@@ -97,7 +94,7 @@ impl Grid {
     }
 
     pub fn travel(&mut self, steps: Vec<Direction>) {
-        let mut pos = Coord::new(0, 0, 0);
+        let mut pos = Coord::new(0, 0);
         for step in steps {
             pos.travel(step);
         }
@@ -124,11 +121,13 @@ impl Grid {
 
         for t in &self.tiles {
             if count(t) == 1 {
+                println!("count {:?} = 1", t);
                 g.tiles.insert(*t);
             }
 
             for n in t.adjacent() {
                 if !self.tiles.contains(&n) && count(&n) == 2 {
+                    println!("white tile count {:?} = 2 (ajc to {:?})", n, t);
                     // is white & 2 adj
                     g.tiles.insert(n);
                 }
@@ -136,5 +135,23 @@ impl Grid {
         }
 
         g
+    }
+
+    pub fn print(&self) {
+        for r in -5..=5 {
+            if (r + 1) % 2 == 0 {
+                print!("      ");
+            }
+            for q in -5..=5 {
+                if self.tiles.contains(&Coord::new(q, r)) {
+                    print!("    XXX    ");
+                } else {
+                    print!(" ({: ^3},{: ^3}) ", q, r);
+                }
+            }
+            println!();
+            println!();
+        }
+        println!();
     }
 }

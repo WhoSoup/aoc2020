@@ -14,8 +14,14 @@ fn main() {
 
     println!("Part One: {}", t.count());
 
+    t.print();
+    let next = t.next_day();
+
+    next.print();
+
     /*    for i in 1..15 {
         t = t.next_day();
         println!("Day {}: {}", i, t.count())
     }*/
+    println!("{:?}", Coord::new(-4, 3).adjacent());
 }
